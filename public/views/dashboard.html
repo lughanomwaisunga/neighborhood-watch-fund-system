@@ -1,0 +1,103 @@
+<?php
+/**
+ * Dashboard View
+ */
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - <?php echo APP_NAME; ?></title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><?php echo APP_NAME; ?></h1>
+            <nav>
+                <ul>
+                    <li><a href="/">Dashboard</a></li>
+                    <li><a href="/members">Members</a></li>
+                    <li><a href="/payments">Payments</a></li>
+                    <li><a href="/statements">Statements</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <section class="dashboard-section">
+                <h2>Collection Overview</h2>
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <h3>Total Collected</h3>
+                        <p class="stat-value">KES <span id="totalCollected">0.00</span></p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Pending Payments</h3>
+                        <p class="stat-value">KES <span id="pendingPayments">0.00</span></p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Active Members</h3>
+                        <p class="stat-value"><span id="activeMembers">0</span></p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>This Month</h3>
+                        <p class="stat-value">KES <span id="monthlyCollection">0.00</span></p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="dashboard-section">
+                <h2>Quick Actions</h2>
+                <div class="actions-container">
+                    <a href="/members/create" class="btn btn-primary">Register New Member</a>
+                    <a href="/payments/initiate" class="btn btn-primary">Record Payment</a>
+                    <a href="/statements" class="btn btn-secondary">View Statements</a>
+                </div>
+            </section>
+
+            <section class="dashboard-section">
+                <h2>Recent Payments</h2>
+                <table class="table" id="recentPayments">
+                    <thead>
+                        <tr>
+                            <th>Member</th>
+                            <th>Plot Number</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 <?php echo APP_NAME; ?>. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script>
+        // Load dashboard data
+        fetch('/api/dashboard/overview')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('totalCollected').textContent = 
+                    parseFloat(data.collection_summary.total_collected || 0).toFixed(2);
+                document.getElementById('pendingPayments').textContent = 
+                    parseFloat(data.collection_summary.pending_collection || 0).toFixed(2);
+                document.getElementById('activeMembers').textContent = 
+                    data.payment_stats.active_members;
+                document.getElementById('monthlyCollection').textContent = 
+                    parseFloat(data.payment_stats.monthly_collection || 0).toFixed(2);
+            })
+            .catch(error => console.error('Error loading dashboard:', error));
+    </script>
+</body>
+</html>
